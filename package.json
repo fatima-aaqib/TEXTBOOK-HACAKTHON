@@ -1,0 +1,28 @@
+{
+  "name": "physical-ai-textbook",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Physical AI & Humanoid Robotics Textbook - Interactive educational platform",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/physical-ai-textbook.git"
+  },
+  "workspaces": [
+    "website"
+  ],
+  "scripts": {
+    "dev:website": "cd website && npm run start",
+    "build:website": "cd website && npm run build",
+    "serve:website": "cd website && npm run serve",
+    "dev:api": "cd api && uvicorn app.main:app --reload --port 8000",
+    "install:all": "npm install && cd website && npm install",
+    "lint:website": "cd website && npm run lint",
+    "typecheck:website": "cd website && npm run typecheck"
+  },
+  "author": "Physical AI Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

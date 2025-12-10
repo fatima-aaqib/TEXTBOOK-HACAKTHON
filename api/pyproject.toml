@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "physical-ai-textbook-api"
+version = "0.1.0"
+description = "FastAPI backend for Physical AI & Humanoid Robotics Textbook"
+authors = ["Physical AI Team"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+alembic = "^1.14.0"
+asyncpg = "^0.30.0"
+pydantic = {extras = ["email"], version = "^2.10.3"}
+pydantic-settings = "^2.6.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.17"
+openai = "^1.58.1"
+qdrant-client = "^1.12.1"
+google-cloud-translate = "^3.18.0"
+python-dotenv = "^1.0.1"
+httpx = "^0.28.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-asyncio = "^0.24.0"
+black = "^24.10.0"
+ruff = "^0.8.4"
+mypy = "^1.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true

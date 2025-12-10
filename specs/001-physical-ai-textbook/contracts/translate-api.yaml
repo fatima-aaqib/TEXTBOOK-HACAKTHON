@@ -1,0 +1,221 @@
+openapi: 3.1.0
+info:
+  title: Physical AI Textbook - Translation API
+  description: Chapter translation service for Urdu language support
+  version: 1.0.0
+
+servers:
+  - url: https://api.physicalai-textbook.com/v1
+    description: Production API
+  - url: http://localhost:8000/v1
+    description: Local development
+
+tags:
+  - name: Translation
+    description: Content translation operations
+
+paths:
+  /translate:
+    post:
+      tags: [Translation]
+      summary: Translate chapter content to Urdu
+      description: Translate markdown chapter content with caching support
+      operationId: translateChapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationRequest'
+      responses:
+        '200':
+          description: Translation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+        '400':
+          description: Invalid request (e.g., unsupported language)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Translation service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /translate/languages:
+    get:
+      tags: [Translation]
+      summary: Get supported languages
+      description: List all supported translation target languages
+      operationId: getSupportedLanguages
+      responses:
+        '200':
+          description: Language list retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageListResponse'
+
+  /translate/cache/{chapter_id}:
+    get:
+      tags: [Translation]
+      summary: Check if translation is cached
+      description: Verify if a chapter translation exists in cache
+      operationId: checkTranslationCache
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "module-1/02-installation"
+        - name: language
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "ur"
+        - name: content_hash
+          in: query
+          required: true
+          schema:
+            type: string
+          description: SHA-256 hash of original content
+      responses:
+        '200':
+          description: Cache hit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cached:
+                    type: boolean
+                    example: true
+                  expires_at:
+                    type: string
+                    format: date-time
+                    example: "2025-12-17T10:00:00Z"
+        '404':
+          description: Cache miss
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cached:
+                    type: boolean
+                    example: false
+
+components:
+  schemas:
+    TranslationRequest:
+      type: object
+      required: [chapter_id, content, target_language]
+      properties:
+        chapter_id:
+          type: string
+          example: "module-1/02-installation"
+          description: Unique chapter identifier
+        content:
+          type: string
+          example: "# Installing ROS 2\n\nTo install ROS 2..."
+          description: Original markdown content
+        content_hash:
+          type: string
+          example: "a3b5c7d9e1f2g3h4i5j6k7l8m9n0o1p2"
+          description: SHA-256 hash for cache lookup (optional, computed if not provided)
+        target_language:
+          type: string
+          enum: [ur]
+          example: "ur"
+          description: Target language code (ISO 639-1)
+        preserve_code:
+          type: boolean
+          default: true
+          example: true
+          description: Keep code blocks in original language
+        preserve_terms:
+          type: array
+          items:
+            type: string
+          example: ["ROS 2", "DDS", "Gazebo"]
+          description: Technical terms to not translate (optional)
+
+    TranslationResponse:
+      type: object
+      properties:
+        chapter_id:
+          type: string
+          example: "module-1/02-installation"
+        source_language:
+          type: string
+          example: "en"
+        target_language:
+          type: string
+          example: "ur"
+        translated_content:
+          type: string
+          example: "# ROS 2 کی تنصیب\n\nROS 2 کو انسٹال کرنے کے لیے..."
+          description: Translated markdown content
+        cached:
+          type: boolean
+          example: false
+          description: Whether result came from cache
+        translation_time_ms:
+          type: integer
+          example: 3420
+          description: Time taken to translate (milliseconds)
+        character_count:
+          type: integer
+          example: 2847
+          description: Number of characters translated
+
+    LanguageListResponse:
+      type: object
+      properties:
+        languages:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: "ur"
+              name:
+                type: string
+                example: "Urdu"
+              native_name:
+                type: string
+                example: "اردو"
+              rtl:
+                type: boolean
+                example: true
+                description: Whether language is right-to-left
+          example:
+            - code: "ur"
+              name: "Urdu"
+              native_name: "اردو"
+              rtl: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        error_code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

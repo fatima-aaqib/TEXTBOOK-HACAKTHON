@@ -1,0 +1,349 @@
+openapi: 3.1.0
+info:
+  title: Physical AI Textbook - Authentication API
+  description: User authentication, registration, and profile management
+  version: 1.0.0
+  contact:
+    name: Physical AI Team
+
+servers:
+  - url: https://api.physicalai-textbook.com/v1
+    description: Production API
+  - url: http://localhost:8000/v1
+    description: Local development
+
+tags:
+  - name: Authentication
+    description: Login, logout, and token management
+  - name: Registration
+    description: User signup and account creation
+  - name: Profile
+    description: User profile and preferences
+
+paths:
+  /auth/register:
+    post:
+      tags: [Registration]
+      summary: Register a new user account
+      description: Create a new user with email, password, and proficiency levels
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input (e.g., weak password, invalid email)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login with email and password
+      description: Authenticate user and return JWT access token
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many login attempts (rate limit)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout and invalidate token
+      description: Revoke the current JWT token
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        '401':
+          description: Unauthorized (invalid or expired token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  format: jwt
+              required: [refresh_token]
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/me:
+    get:
+      tags: [Profile]
+      summary: Get current user profile
+      description: Retrieve authenticated user's profile information
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/profile:
+    put:
+      tags: [Profile]
+      summary: Update user profile
+      description: Update user's name and proficiency levels
+      operationId: updateProfile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token obtained from login/register
+
+  schemas:
+    RegistrationRequest:
+      type: object
+      required: [email, password, hardware_level, software_level]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "student@example.com"
+          description: User's email address (used for login)
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "SecurePass123!"
+          description: Password (min 8 characters)
+        full_name:
+          type: string
+          example: "Ahmed Khan"
+          description: User's full name (optional)
+        hardware_level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          example: "beginner"
+          description: Hardware/robotics proficiency
+        software_level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          example: "intermediate"
+          description: Software/programming proficiency
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "student@example.com"
+        password:
+          type: string
+          format: password
+          example: "SecurePass123!"
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          format: jwt
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          description: JWT access token (valid for 1 hour)
+        refresh_token:
+          type: string
+          format: jwt
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          description: JWT refresh token (valid for 7 days)
+        token_type:
+          type: string
+          example: "bearer"
+        expires_in:
+          type: integer
+          example: 3600
+          description: Token expiration time in seconds
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          format: jwt
+        token_type:
+          type: string
+          example: "bearer"
+        expires_in:
+          type: integer
+          example: 3600
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        email:
+          type: string
+          format: email
+          example: "student@example.com"
+        full_name:
+          type: string
+          example: "Ahmed Khan"
+          nullable: true
+        hardware_level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          example: "beginner"
+        software_level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          example: "intermediate"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-12-10T10:30:00Z"
+        last_login_at:
+          type: string
+          format: date-time
+          example: "2025-12-10T14:20:00Z"
+          nullable: true
+
+    ProfileUpdateRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          example: "Ahmed Khan"
+        hardware_level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        software_level:
+          type: string
+          enum: [beginner, intermediate, advanced]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid credentials"
+          description: Human-readable error message
+        error_code:
+          type: string
+          example: "AUTH_001"
+          description: Machine-readable error code
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context (optional)

@@ -1,0 +1,430 @@
+openapi: 3.1.0
+info:
+  title: Physical AI Textbook - Personalization API
+  description: Content personalization and user progress tracking
+  version: 1.0.0
+
+servers:
+  - url: https://api.physicalai-textbook.com/v1
+    description: Production API
+  - url: http://localhost:8000/v1
+    description: Local development
+
+tags:
+  - name: Progress
+    description: User reading progress and chapter completion
+  - name: Recommendations
+    description: Personalized content recommendations
+  - name: Quiz
+    description: Quiz management and results
+
+paths:
+  /progress:
+    get:
+      tags: [Progress]
+      summary: Get user's overall progress
+      description: Retrieve progress statistics across all modules
+      operationId: getUserProgress
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Progress retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressOverview'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /progress/chapter:
+    post:
+      tags: [Progress]
+      summary: Update chapter progress
+      description: Mark chapter as completed or update reading time
+      operationId: updateChapterProgress
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgressUpdateRequest'
+      responses:
+        '200':
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChapterProgress'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /recommendations:
+    get:
+      tags: [Recommendations]
+      summary: Get personalized chapter recommendations
+      description: Suggest next chapters based on progress and proficiency
+      operationId: getRecommendations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+            maximum: 20
+          description: Number of recommendations to return
+      responses:
+        '200':
+          description: Recommendations generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationsResponse'
+
+  /quiz/{quiz_id}:
+    get:
+      tags: [Quiz]
+      summary: Get quiz questions
+      description: Retrieve quiz with questions (answers excluded)
+      operationId: getQuiz
+      parameters:
+        - name: quiz_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Quiz retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '404':
+          description: Quiz not found
+
+  /quiz/{quiz_id}/submit:
+    post:
+      tags: [Quiz]
+      summary: Submit quiz answers
+      description: Submit quiz attempt and receive instant feedback
+      operationId: submitQuiz
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: quiz_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSubmission'
+      responses:
+        '200':
+          description: Quiz graded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizResult'
+        '400':
+          description: Invalid submission (e.g., missing answers)
+
+  /quiz/history:
+    get:
+      tags: [Quiz]
+      summary: Get user's quiz history
+      description: Retrieve all quiz attempts with scores
+      operationId: getQuizHistory
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: module
+          in: query
+          schema:
+            type: string
+          description: Filter by module (optional)
+      responses:
+        '200':
+          description: Quiz history retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizHistoryResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ProgressOverview:
+      type: object
+      properties:
+        total_chapters:
+          type: integer
+          example: 50
+        completed_chapters:
+          type: integer
+          example: 12
+        completion_percentage:
+          type: number
+          format: float
+          example: 24.0
+        modules:
+          type: array
+          items:
+            type: object
+            properties:
+              module_name:
+                type: string
+                example: "ros2"
+              total_chapters:
+                type: integer
+                example: 15
+              completed_chapters:
+                type: integer
+                example: 5
+              completion_percentage:
+                type: number
+                example: 33.3
+        total_reading_time_minutes:
+          type: integer
+          example: 342
+
+    ProgressUpdateRequest:
+      type: object
+      required: [chapter_id]
+      properties:
+        chapter_id:
+          type: string
+          example: "module-1/03-first-node"
+        completed:
+          type: boolean
+          example: true
+        reading_time_seconds:
+          type: integer
+          example: 420
+          description: Time spent reading (optional)
+
+    ChapterProgress:
+      type: object
+      properties:
+        chapter_id:
+          type: string
+        module_name:
+          type: string
+        completed:
+          type: boolean
+        last_read_at:
+          type: string
+          format: date-time
+        reading_time_seconds:
+          type: integer
+
+    RecommendationsResponse:
+      type: object
+      properties:
+        recommendations:
+          type: array
+          items:
+            type: object
+            properties:
+              chapter_id:
+                type: string
+                example: "module-2/01-gazebo-intro"
+              title:
+                type: string
+                example: "Introduction to Gazebo Simulation"
+              module:
+                type: string
+                example: "gazebo-unity"
+              difficulty:
+                type: string
+                enum: [beginner, intermediate, advanced]
+                example: "beginner"
+              estimated_reading_time:
+                type: integer
+                example: 15
+                description: Minutes
+              reason:
+                type: string
+                example: "Next chapter in your learning path"
+              relevance_score:
+                type: number
+                format: float
+                example: 0.92
+
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        module_name:
+          type: string
+          example: "ros2"
+        title:
+          type: string
+          example: "ROS 2 Basics Assessment"
+        description:
+          type: string
+        passing_score:
+          type: integer
+          example: 70
+        time_limit_minutes:
+          type: integer
+          nullable: true
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+
+    QuizQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        question_text:
+          type: string
+          example: "What does ROS stand for?"
+        question_type:
+          type: string
+          enum: [multiple_choice, short_answer]
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Robot Operating System", "Robotic Observation Software", "Remote Operation Service"]
+          nullable: true
+        points:
+          type: integer
+          example: 1
+
+    QuizSubmission:
+      type: object
+      required: [answers]
+      properties:
+        started_at:
+          type: string
+          format: date-time
+          description: When user started the quiz
+        answers:
+          type: array
+          items:
+            type: object
+            properties:
+              question_id:
+                type: string
+                format: uuid
+              answer:
+                type: string
+                description: Selected option index (for MCQ) or text (for short answer)
+            required: [question_id, answer]
+
+    QuizResult:
+      type: object
+      properties:
+        attempt_id:
+          type: string
+          format: uuid
+        quiz_id:
+          type: string
+          format: uuid
+        score:
+          type: integer
+          example: 85
+        max_score:
+          type: integer
+          example: 100
+        passed:
+          type: boolean
+          example: true
+        time_taken_seconds:
+          type: integer
+          example: 420
+        feedback:
+          type: array
+          items:
+            type: object
+            properties:
+              question_id:
+                type: string
+                format: uuid
+              correct:
+                type: boolean
+              user_answer:
+                type: string
+              correct_answer:
+                type: string
+              explanation:
+                type: string
+        suggested_projects:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              difficulty:
+                type: string
+
+    QuizHistoryResponse:
+      type: object
+      properties:
+        attempts:
+          type: array
+          items:
+            type: object
+            properties:
+              attempt_id:
+                type: string
+                format: uuid
+              quiz_id:
+                type: string
+                format: uuid
+              quiz_title:
+                type: string
+              module:
+                type: string
+              score:
+                type: integer
+              passed:
+                type: boolean
+              submitted_at:
+                type: string
+                format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        error_code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

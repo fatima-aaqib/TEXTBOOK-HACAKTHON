@@ -27,13 +27,13 @@ This is a web application with frontend (Docusaurus) and backend (FastAPI):
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create root project structure with website/, api/, tests/, .github/ directories
-- [ ] T002 [P] Initialize Docusaurus project in website/ with TypeScript template
-- [ ] T003 [P] Initialize FastAPI project in api/ with Python 3.11+ and pyproject.toml
-- [ ] T004 [P] Create .env.example files for website/.env.local and api/.env
-- [ ] T005 [P] Initialize package.json in root for monorepo workspace management
-- [ ] T006 [P] Create .gitignore with node_modules, venv, .env, build artifacts
-- [ ] T007 [P] Initialize Git repository and create initial commit
+- [x] T001 Create root project structure with website/, api/, tests/, .github/ directories
+- [x] T002 [P] Initialize Docusaurus project in website/ with TypeScript template
+- [x] T003 [P] Initialize FastAPI project in api/ with Python 3.11+ and pyproject.toml
+- [x] T004 [P] Create .env.example files for website/.env.local and api/.env
+- [x] T005 [P] Initialize package.json in root for monorepo workspace management
+- [x] T006 [P] Create .gitignore with node_modules, venv, .env, build artifacts
+- [x] T007 [P] Initialize Git repository and create initial commit
 
 ---
 
@@ -43,19 +43,19 @@ This is a web application with frontend (Docusaurus) and backend (FastAPI):
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T008 Configure Docusaurus with Tailwind CSS in website/docusaurus.config.js
-- [ ] T009 [P] Install and configure shadcn/ui components in website/src/components/ui/
-- [ ] T010 [P] Setup Neon Postgres database connection in api/app/db/session.py
-- [ ] T011 [P] Create Alembic migrations structure in api/app/db/migrations/
-- [ ] T012 [P] Setup Qdrant Cloud client in api/app/utils/vector_store.py
-- [ ] T013 [P] Configure OpenAI API client in api/app/utils/openai_client.py
-- [ ] T014 [P] Setup Google Cloud Translation API client in api/app/utils/translation_client.py
-- [ ] T015 [P] Create FastAPI app entry point in api/app/main.py with CORS middleware
-- [ ] T016 [P] Setup environment configuration in api/app/config.py with Pydantic settings
-- [ ] T017 [P] Create API error handling middleware in api/app/middleware/error_handler.py
-- [ ] T018 [P] Setup JWT utilities in api/app/utils/security.py (token generation, verification)
-- [ ] T019 Create Pydantic base models in api/app/models/base.py for request/response validation
-- [ ] T020 [P] Create database base models in api/app/models/db_base.py with SQLAlchemy declarative_base
+- [x] T008 Configure Docusaurus with Tailwind CSS in website/docusaurus.config.js
+- [x] T009 [P] Install and configure shadcn/ui components in website/src/components/ui/
+- [x] T010 [P] Setup Neon Postgres database connection in api/app/db/session.py
+- [x] T011 [P] Create Alembic migrations structure in api/app/db/migrations/
+- [x] T012 [P] Setup Qdrant Cloud client in api/app/utils/vector_store.py
+- [x] T013 [P] Configure OpenAI API client in api/app/utils/openai_client.py
+- [x] T014 [P] Setup Google Cloud Translation API client in api/app/utils/translation_client.py
+- [x] T015 [P] Create FastAPI app entry point in api/app/main.py with CORS middleware
+- [x] T016 [P] Setup environment configuration in api/app/config.py with Pydantic settings
+- [x] T017 [P] Create API error handling middleware in api/app/middleware/error_handler.py
+- [x] T018 [P] Setup JWT utilities in api/app/utils/security.py (token generation, verification)
+- [x] T019 Create Pydantic base models in api/app/models/base.py for request/response validation
+- [x] T020 [P] Create database base models in api/app/models/db_base.py with SQLAlchemy declarative_base
 - [ ] T021 Run database migrations to create schema (execute: alembic upgrade head)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel

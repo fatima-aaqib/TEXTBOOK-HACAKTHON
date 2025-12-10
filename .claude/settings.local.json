@@ -14,7 +14,10 @@
       "Bash(node:*)",
       "Bash(npm --version)",
       "Bash(npx -y create-docusaurus@latest . classic --typescript)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install:*)",
+      "Bash(python -m alembic:*)"
     ]
   }
 }

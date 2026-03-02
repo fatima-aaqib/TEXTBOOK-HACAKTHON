@@ -17,7 +17,7 @@ pydantic-settings = "^2.6.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.17"
-openai = "^1.58.1"
+google-generativeai = "^0.8.3"
 qdrant-client = "^1.12.1"
 google-cloud-translate = "^3.18.0"
 python-dotenv = "^1.0.1"

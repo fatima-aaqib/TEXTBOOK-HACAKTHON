@@ -3,7 +3,7 @@ Environment configuration using Pydantic Settings
 T016: Setup environment configuration
 """
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 from functools import lru_cache
 
 
@@ -14,14 +14,19 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     # Qdrant Vector Database
-    QDRANT_URL: str
-    QDRANT_API_KEY: str
+    QDRANT_URL: Optional[str] = None
+    QDRANT_API_KEY: Optional[str] = None
+    QDRANT_PATH: Optional[str] = None  # For local Qdrant storage
+    QDRANT_COLLECTION_NAME: str = "physical_ai_textbook"
 
-    # OpenAI API
-    OPENAI_API_KEY: str
+    # OpenAI API (optional, for backward compatibility)
+    OPENAI_API_KEY: Optional[str] = None
 
-    # Google Cloud Translation
-    GOOGLE_CLOUD_API_KEY: str
+    # Gemini API
+    GEMINI_API_KEY: str
+
+    # Google Cloud Translation (optional)
+    GOOGLE_CLOUD_API_KEY: Optional[str] = None
 
     # JWT Authentication
     JWT_SECRET: str

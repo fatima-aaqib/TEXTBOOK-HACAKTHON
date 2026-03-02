@@ -9,23 +9,40 @@ from app.config import get_settings
 from typing import List, Dict, Any
 
 
-COLLECTION_NAME = "textbook_content"
-VECTOR_SIZE = 1536  # text-embedding-3-small dimensions
+# Collection name from settings (defaults to "physical_ai_textbook")
+def get_collection_name():
+    """Get collection name from settings"""
+    settings = get_settings()
+    return settings.QDRANT_COLLECTION_NAME
+
+
+VECTOR_SIZE = 3072  # Gemini embedding-001 dimensions
 
 
 @lru_cache()
-def get_qdrant_client() -> AsyncQdrantClient:
+def get_qdrant_client():
     """
-    Get cached Qdrant async client instance
+    Get cached Qdrant client instance (non-async for RAG service)
 
     Returns:
-        AsyncQdrantClient: Configured Qdrant client
+        QdrantClient: Configured Qdrant client
     """
+    from qdrant_client import QdrantClient
+    import os
     settings = get_settings()
-    return AsyncQdrantClient(
-        url=settings.QDRANT_URL,
-        api_key=settings.QDRANT_API_KEY,
-    )
+
+    # Use local path if URL not provided
+    if settings.QDRANT_URL:
+        return QdrantClient(
+            url=settings.QDRANT_URL,
+            api_key=settings.QDRANT_API_KEY,
+        )
+    elif settings.QDRANT_PATH:
+        # Use local file storage
+        return QdrantClient(path=settings.QDRANT_PATH)
+    else:
+        # Use in-memory storage for development
+        return QdrantClient(location=":memory:")
 
 
 async def initialize_collection():
@@ -34,14 +51,15 @@ async def initialize_collection():
     Creates collection if it doesn't exist
     """
     client = get_qdrant_client()
+    collection_name = get_collection_name()
 
     # Check if collection exists
     collections = await client.get_collections()
     collection_names = [c.name for c in collections.collections]
 
-    if COLLECTION_NAME not in collection_names:
+    if collection_name not in collection_names:
         await client.create_collection(
-            collection_name=COLLECTION_NAME,
+            collection_name=collection_name,
             vectors_config=VectorParams(
                 size=VECTOR_SIZE,
                 distance=Distance.COSINE
@@ -59,6 +77,7 @@ async def upsert_vectors(
         points: List of dicts with 'id', 'vector', and 'payload' keys
     """
     client = get_qdrant_client()
+    collection_name = get_collection_name()
 
     # Convert to PointStruct objects
     point_structs = [
@@ -71,7 +90,7 @@ async def upsert_vectors(
     ]
 
     await client.upsert(
-        collection_name=COLLECTION_NAME,
+        collection_name=collection_name,
         points=point_structs
     )
 
@@ -93,9 +112,10 @@ async def search_similar(
         List of search results with payload and score
     """
     client = get_qdrant_client()
+    collection_name = get_collection_name()
 
     results = await client.search(
-        collection_name=COLLECTION_NAME,
+        collection_name=collection_name,
         query_vector=query_vector,
         limit=limit,
         score_threshold=score_threshold

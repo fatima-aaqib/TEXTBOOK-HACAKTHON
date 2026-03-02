@@ -1,35 +1,18 @@
 """
 FastAPI application entry point
-T015: Create FastAPI app with CORS middleware
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 from app.config import get_settings
 from app.middleware.error_handler import error_handler_middleware
-from app.utils.vector_store import initialize_collection
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Application lifespan manager - runs on startup and shutdown
-
-    Initializes:
-    - Qdrant vector database collection
-    """
-    # Startup
-    await initialize_collection()
-    yield
-    # Shutdown (cleanup if needed)
+from app.api.v1.chat import router as chat_router
 
 
 # Create FastAPI app
 app = FastAPI(
     title="Physical AI Textbook API",
     description="Backend API for Physical AI & Humanoid Robotics interactive textbook",
-    version="1.0.0",
-    lifespan=lifespan
+    version="1.0.0"
 )
 
 # Load settings
@@ -46,6 +29,9 @@ app.add_middleware(
 
 # Add error handling middleware
 app.middleware("http")(error_handler_middleware)
+
+# Include routers
+app.include_router(chat_router, prefix="/api/v1")
 
 
 @app.get("/")
@@ -65,17 +51,6 @@ async def health_check():
         "status": "healthy",
         "environment": settings.ENVIRONMENT,
         "services": {
-            "api": "operational",
-            "database": "connected",
-            "vector_store": "connected"
+            "api": "operational"
         }
     }
-
-
-# Import and include routers
-# TODO: Add routers when implemented
-# from app.routers import auth, chat, translate, personalize
-# app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-# app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
-# app.include_router(translate.router, prefix="/api/v1/translate", tags=["translate"])
-# app.include_router(personalize.router, prefix="/api/v1/personalize", tags=["personalize"])

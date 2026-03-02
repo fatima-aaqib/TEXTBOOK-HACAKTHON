@@ -3,6 +3,15 @@
  * and scoped locally.
  */
 
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Additional styles for the homepage */
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
@@ -10,14 +19,147 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
+/* Module card hover effect */
+.moduleCard {
+  transition: all 0.3s ease;
+}
+
+.moduleCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Feature card styling */
+.featureCard {
+  transition: all 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-3px);
+}
+
+/* Testimonial card styling */
+.testimonialCard {
+  border-left: 4px solid var(--ifm-color-primary);
+}
+
+/* Stats section styling */
+.statsSection {
+  background: linear-gradient(135deg, var(--ifm-color-primary-lightest) 0%, var(--ifm-color-primary-lighter) 100%);
+}
+
+/* CTA section styling */
+.ctaSection {
+  background: linear-gradient(135deg, var(--ifm-color-primary-darker) 0%, var(--ifm-color-primary-dark) 100%);
+}
+
+/* Mobile-specific responsive adjustments */
+@media (max-width: 996px) {
   .heroBanner {
-    padding: 2rem;
+    padding: 2rem 1rem;
+  }
+  
+  .buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .buttons a {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Stack columns on mobile */
+  .row > div[class*="col"] {
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Adjust card layouts */
+  .card {
+    margin-bottom: 1.5rem;
   }
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Tablet-specific responsive adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .row > div[class*="col--3"] {
+    width: 50%;
+    margin-bottom: 1.5rem;
+  }
+  
+  .row > div[class*="col--4"] {
+    width: 50%;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Mobile-specific responsive adjustments */
+@media (max-width: 768px) {
+  .buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .buttons a {
+    margin-bottom: 1rem;
+  }
+  
+  /* Ensure proper spacing on mobile */
+  .margin-bottom--lg {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  /* Adjust text sizes for better mobile readability */
+  .hero__title {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+  
+  .hero__subtitle {
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+  
+  /* Adjust card content for mobile */
+  .card__body {
+    padding: 1rem;
+  }
+  
+  .card__header {
+    padding: 1rem;
+  }
+  
+  /* Make sure touch targets are large enough */
+  .button {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .heroBanner {
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .hero__title {
+    font-size: 1.75rem;
+  }
+  
+  .hero__subtitle {
+    font-size: 1rem;
+  }
+  
+  /* Further adjust spacing on small screens */
+  .margin-vert--xl {
+    margin: 1.5rem 0 !important;
+  }
+  
+  .padding-vert--xl {
+    padding: 1.5rem 0 !important;
+  }
 }

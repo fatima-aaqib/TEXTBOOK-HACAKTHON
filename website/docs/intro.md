@@ -2,46 +2,37 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Welcome to Physical AI & Humanoid Robotics
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Welcome to the comprehensive textbook on **Physical AI and Humanoid Robotics**! This interactive learning platform covers everything from fundamental robotics concepts to cutting-edge AI techniques for embodied intelligence.
+
+## About This Textbook
+
+This textbook is organized into four comprehensive modules, each containing multiple chapters that build upon each other to provide a complete learning path:
+
+### 🤖 Module 1: ROS 2 Fundamentals
+Learn the Robot Operating System 2 (ROS 2), the industry-standard middleware for robotics development. Master nodes, topics, services, actions, and build your first robot applications.
+
+### 🎮 Module 2: Gazebo & Unity Simulation
+Create realistic robot simulations using Gazebo Classic, Gazebo Fortress, and Unity. Test your algorithms in safe virtual environments before deployment to real hardware.
+
+### ⚡ Module 3: NVIDIA Isaac Platform
+Leverage NVIDIA Isaac Sim and Isaac SDK for cutting-edge robot simulation, synthetic data generation, and GPU-accelerated AI development.
+
+### 🧠 Module 4: Vision-Language-Action Models
+Explore state-of-the-art VLA models that combine vision, language understanding, and action generation for embodied AI and humanoid robotics.
+
+## Learning Approach
+
+This textbook takes a hands-on approach with:
+- Interactive code examples
+- Practical exercises
+- Real-world projects
+- Simulation environments
+- AI integration techniques
 
 ## Getting Started
 
-Get started by **creating a new site**.
+Begin your journey by exploring the modules above, or jump directly to the topic that interests you most. Each chapter builds upon previous knowledge while remaining accessible to readers who want to dive into specific topics.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+Ready to start? Choose a module from the navigation menu or click on one of the cards on the homepage to begin your learning adventure!

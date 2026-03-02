@@ -9,6 +9,15 @@ from alembic import context
 from app.models.db_base import Base
 from app.config import get_settings
 
+# Import all models to ensure they are registered with Base.metadata
+from app.models import (
+    User,
+    UserProgress,
+    TranslationCache,
+    ChatSession,
+    ChatMessage
+)
+
 # Alembic Config object
 config = context.config
 
